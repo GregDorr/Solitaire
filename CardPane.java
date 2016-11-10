@@ -63,7 +63,7 @@ public class CardPane extends StackPane {
      */
     public ArrayList<ImageCard> getMoveAbleCards(){
         ArrayList<ImageCard> temp = new ArrayList<ImageCard>();
-        for(int index = super.getChildren().size()-1; index > 0; index--){
+        for(int index = super.getChildren().size()-1; index >= 0; index--){
             ImageCard c1 = ((ImageCard)super.getChildren().get(index));
             if(c1.getCard().isFaceUp())
                 temp.add(c1);

@@ -51,9 +51,9 @@ public class Card {
      * @param c2 a second card to compare
      * @return true if the card can stack on c2. otherwise return false
      */
-    public boolean isStackable(Card c2){
+    public boolean isStackableOn(Card c2){
         //if card 2 is less than card 1
-        if((c2.getCardNum()-this.getCardNum()) == -1){
+        if((this.getCardNum()-c2.getCardNum()) == -1){
             //if the colors aren't equal
             if(!(c2.getColor().equals(this.getColor()))){
                 return true;
