@@ -37,10 +37,7 @@ public class ImageCard extends ImageView {
         return card;
     }
 
-    /**
-     *
-     * @return a string version of this object
-     */
+
     public String toString(){
         return "ImageCard[" + getCard().toString() + "]";
     }

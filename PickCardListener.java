@@ -23,11 +23,11 @@ public class PickCardListener implements EventHandler<MouseEvent>{
         /* allow any transfer mode */
         int index = scene.getPick().size();
         ImageCard source = (ImageCard) scene.getPick().get(index-1);
-        scene.tempCard = source;
+        //scene.tempCard = source;
         Dragboard db = source.startDragAndDrop(TransferMode.MOVE);
         //the actual image being dragged
-        scene.db = source.startDragAndDrop(TransferMode.MOVE);
-        scene.db.setDragView(source.getImage());
+        //scene.db = source.startDragAndDrop(TransferMode.MOVE);
+        //scene.db.setDragView(source.getImage());
         /* Put a string on a dragboard */
         ClipboardContent content = new ClipboardContent();
         content.putString(source.getCard().toString());

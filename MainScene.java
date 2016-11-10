@@ -7,8 +7,8 @@ import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
-
 import java.util.ArrayList;
+
 
 
 /**
@@ -18,10 +18,9 @@ import java.util.ArrayList;
  */
 public class MainScene extends Scene {
 
-    Dragboard db;
-
-    //temp card
-    ImageCard tempCard = null;
+    CardPane fromPane;
+    ImageCard moveCard;
+    boolean canStack = false;
 
     //bottom most node
     private BorderPane root;
@@ -161,33 +160,17 @@ public class MainScene extends Scene {
             //initializing the a stack and getting cards
             stacks[index] = new CardPane();
             stacks[index].setId("CardStacks");
-
-            //adding a drop listener
-            //LAMBDA EXPRESSION
-            //dragdetected
-            stacks[index].setOnDragDetected((MouseEvent event) -> {
-                //dragDectected
-                dragDetected(event);
-            });
-
-            //drag over
-            stacks[index].setOnDragOver((DragEvent event) -> {
-                //call the dragOver method
-                dragOver(event);
-            });
-
-            //dragDrop
-            stacks[index].setOnDragDropped((DragEvent event) -> {
-                //call the dragDropped method
-                dragDropped(event);
-            });
-
             Card[] temp = deck.deal(index+1);
+
             //adding all the cards
             for(int i = 1; i < temp.length; i++){
-                stacks[index].add(new ImageCard(temp[i].getCardBack(),temp[i]));
+                //creating a new ImageCard and adding an action listener
+                ImageCard c2 = new ImageCard(temp[i].getCardBack(),temp[i]);
+                //adding the image card to the stack
+                stacks[index].add(c2);
                 System.out.println(temp[i].getCardFace().getBoundsInParent().toString());
             }
+
             //add the first card last inorder to have it be on top face up
             ImageCard c1 = new ImageCard(temp[0].getCardFace(),temp[0]);
             //changing the status of the card to be up
@@ -195,6 +178,42 @@ public class MainScene extends Scene {
             //adding event listener
             //addCard[Number: 7, Suit: Spades] the card
             stacks[index].add(c1);
+
+
+            stacks[index].setOnMouseClicked((MouseEvent event) -> flipCardOver(event));
+
+
+            //adding a drop listener
+            //LAMBDA EXPRESSION
+
+            //dragDetected
+            stacks[index].setOnDragDetected((MouseEvent event) -> dragDetected(event));
+
+            //dragOver
+            stacks[index].setOnDragOver((DragEvent event) -> dragOver(event));
+
+            //dragDrop
+            stacks[index].setOnDragDropped((DragEvent event) -> dragDropped(event));
+
+
+
+        }
+    }
+
+    /**
+     * flips the card over if there isn't any card on top of it
+     * @param event
+     */
+    private void flipCardOver(final MouseEvent event){
+        CardPane p1 =(CardPane)event.getSource();
+
+        if(p1.getMoveAbleCards().size() == 0){
+            ImageCard c1 = ((ImageCard)p1.getLastChild());
+
+            //flipping the card to face up.
+            c1.getCard().setFaceUp(true);
+            c1.setImage(c1.getCard().getCardFace());
+
         }
     }
 
@@ -204,45 +223,29 @@ public class MainScene extends Scene {
      */
     private void dragDetected(final MouseEvent event){
 
-        /*
-        DragBoard db = event.getSource();
-        //getting the pane it's from
-        CardPane p1 = (CardPane)event.getSource();
+        ArrayList<ImageCard> src = ((CardPane)event.getSource()).getMoveAbleCards();
 
-        //checking what cards you can grab from a stack
-        ArrayList<ImageCard> temp = p1.getMoveAbleCards();
-        //TODO remove print line
-        System.out.println(temp);
+        //TODO remove output
+        System.out.println(src);
 
-        ImageCard source = temp.get(0);
-        db = source.startDragAndDrop(TransferMode.MOVE);
-        //the actual image being dragged
-        db = source.startDragAndDrop(TransferMode.MOVE);
-        db.setDragView(source.getImage());
-        ClipboardContent content = new ClipboardContent();
-        content.putString(source.getCard().toString());
-        db.setContent(content);
-        */
+        if(src.size() != 0){
+            fromPane = (CardPane)event.getSource();
+            moveCard = src.get(0);
 
-         /* drag was detected, start a drag-and-drop gesture*/
-        /* allow any transfer mode */
-        //getting the pane it's from
-        CardPane p1 = (CardPane)event.getSource();
 
-        //checking what cards you can grab from a stack
-        ArrayList<ImageCard> temp = p1.getMoveAbleCards();
-        //TODO remove print line
-        System.out.println(temp);
+            Dragboard db = startDragAndDrop(TransferMode.MOVE);
+            startDragAndDrop(TransferMode.MOVE);
+            db.setDragView(moveCard.getImage());
 
-        ImageCard source = temp.get(0);
 
-        //the actual image being dragged
-        db = source.startDragAndDrop(TransferMode.MOVE);
-        db.setDragView(source.getImage());
-        /* Put a string on a dragboard */
-        ClipboardContent content = new ClipboardContent();
-        content.putString(source.getCard().toString());
-        db.setContent(content);
+            ClipboardContent content = new ClipboardContent();
+            content.putString(src.get(0).getCard().toString());
+            db.setContent(content);
+        }
+
+
+        event.consume();
+
     }
 
     /**
@@ -252,16 +255,24 @@ public class MainScene extends Scene {
     private void dragOver(final DragEvent event){
         //Dragboard db = event.getDragboard();
         //casting to a card
-        CardPane pane = (CardPane) event.getSource();
-        ImageCard c1 = ((ImageCard)(pane).getLastChild());
-        System.out.println(c1.getCard().isStackable(tempCard.getCard()));
 
-        if(c1.getCard().isStackable(tempCard.getCard())) {
-            pane.add(tempCard);
-            pick.getChildren().remove(tempCard);
-            tempCard = null;
+        //getting the pane it's currently in
+        CardPane toPane = (CardPane) event.getSource();
+
+        //get the current card it's comparing it
+        ImageCard currentCard = (ImageCard)toPane.getLastChild();
+
+        //checking if the moveCard can stack on the current card
+        if(moveCard.getCard().isStackableOn(currentCard.getCard())){
+            canStack = true;
+            event.acceptTransferModes(TransferMode.MOVE);
+
         }
+
+        event.consume();
     }
+
+
 
     /**
      * drop
@@ -269,8 +280,19 @@ public class MainScene extends Scene {
      */
     private void dragDropped(final DragEvent event){
 
-       // event.setDropCompleted(true);
+        CardPane toPane = (CardPane) event.getSource();
+
+        //if the card can stack it'll move it
+        if(canStack){
+            fromPane.remove(moveCard);
+            toPane.add(moveCard);
+        }
+
+
+        event.setDropCompleted(true);
+        event.consume();
     }
+
 
     /**
      *
