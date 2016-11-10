@@ -1,20 +1,25 @@
-package sample;
+package Solitare;
 
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 /**
- * Created by Greg on 9/27/2016.
+ * @author Greg
+ * @version 1.0
+ * Created on 9/27/2016.
+ *
+ * This class represents each individual card.
  */
-public class Card implements Comparable<Card> {
+public class Card {
     private int cardNum;
     private String suit;
     private String color;
-    private boolean faceUp;
+    private boolean faceUp;             //if the card is move able or not
     private ImageView cardFace;
-    private ImageView cardBack;
+    private final ImageView cardBack;
 
-    //default constructor
+    /**
+     * Default Constructor that accepts no parameters
+     */
     public Card(){
         cardNum = 0;
         suit = null;
@@ -24,16 +29,13 @@ public class Card implements Comparable<Card> {
         cardBack = null;
     }
 
-    //constructor that doesn't accept images
-    public Card(int num, String suit, String color) {
-        cardNum = num;
-        this.suit = suit;
-        this.color = color;
-        cardFace = null;
-        cardBack = null;
-    }
-
-    //Constructor that accepts all aruments
+    /**
+     * Constructor that takes in 4 arguments
+     * @param num -- the number of the card
+     * @param suit -- the suit of the card
+     * @param color -- the color of the card
+     * @param cardFace -- the image of the face
+     */
     public Card(int num, String suit, String color, ImageView cardFace){
         cardNum = num;
         this.suit = suit;
@@ -41,9 +43,35 @@ public class Card implements Comparable<Card> {
         this.cardFace = cardFace;
         this.cardBack = new ImageView("Cards/b1fv.png");
         faceUp = false;
-
     }
 
+    /**
+     * Checks to see weither a card can stack ontop of another
+     *
+     * @param c2 a second card to compare
+     * @return true if the card can stack on c2. otherwise return false
+     */
+    public boolean isStackable(Card c2){
+        //if card 2 is less than card 1
+        if((c2.getCardNum()-this.getCardNum()) == -1){
+            //if the colors aren't equal
+            if(!(c2.getColor().equals(this.getColor()))){
+                return true;
+            }
+            else return false;
+        }
+        else return false;
+    }
+
+    /**
+     * returns a string version of the object
+     * @return String version of the object
+     */
+    public String toString(){
+        return ("Card[Number: " + cardNum + ", Suit: " + suit + "]");
+    }
+
+    //SETTERS AND GETTERS
     public int getCardNum() {
         return cardNum;
     }
@@ -76,36 +104,9 @@ public class Card implements Comparable<Card> {
         this.cardFace = cardFace;
     }
 
-    public ImageView getCardBack() {
-        return cardBack;
-    }
-
-    public void setCardBack(ImageView cardBack) {
-        this.cardBack = cardBack;
-    }
+    public ImageView getCardBack() {return cardBack;}
 
     public String getColor(){ return color; }
 
     public void setColor(String color){ this.color = color;}
-
-    public String toString(){
-        return ("Card[Number: " + cardNum + ", Suit: " + suit + "]");
-    }
-
-
-    @Override
-    public int compareTo(Card c2) {
-
-        return 0;
-    }
-
-    public boolean equals(Card c2) {
-        //the suit and number need to be the same
-        if(suit.equals(c2.getSuit())) {
-            if (cardNum == c2.getCardNum())
-                return true;
-        }
-        //default return
-        return false;
-    }
 }
