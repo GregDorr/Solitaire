@@ -1,4 +1,4 @@
-package Solitare;
+package Solitaire;
 
 import javafx.scene.image.ImageView;
 
@@ -10,15 +10,17 @@ import javafx.scene.image.ImageView;
 public class ImageCard extends ImageView {
 
     private Card card;
+    private int stackNumber;
 
     /**
      * Constructor that accepts 2 parameters
      * @param image of the card
      * @param card the actual card
      */
-    public ImageCard(ImageView image, Card card){
+    public ImageCard(ImageView image, Card card, int stackNumber){
         super(image.getImage());
         this.card = card;
+        this.stackNumber = stackNumber;
     }
 
     /**
@@ -36,6 +38,9 @@ public class ImageCard extends ImageView {
     public Card getCard() {
         return card;
     }
+
+    public int getStackNumber(){return stackNumber;}
+    public void setStackNumber(int num){ stackNumber = num;}
 
 
     public String toString(){
