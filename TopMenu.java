@@ -1,9 +1,10 @@
-package Solitare;
+package Solitaire;
 
 import javafx.application.Platform;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.layout.BorderPane;
 
 /**
  * @author Greg
@@ -19,12 +20,19 @@ public class TopMenu extends MenuBar {
     private MenuItem exitMenuItem;
     private MenuItem newGame;
 
+    private Main main;
 
     /**
      * Default constructor
      */
-    public TopMenu(){
+    public TopMenu(Main main){
         super();
+
+        this.main = main;
+
+        //initializing the menu items
+        menuFile = new Menu("File");
+        menuHelp = new Menu("Help");
 
         setUpFile();
         setUpHelp();
@@ -33,12 +41,14 @@ public class TopMenu extends MenuBar {
     }
 
     private void setUpFile(){
-        menuFile = new Menu("File");
         newGame = new MenuItem("New Game");
-
         //TODO new game action listener
-        newGame.setOnAction((ActionEvent)-> System.out.println("No"));
-
+       /* newGame.setOnAction((ActionEvent)-> {
+            BorderPane p1 = new BorderPane();
+            p1.setTop(new TopMenu(main));
+            main.setStage(new MainScene(p1));
+        });
+        */
         exitMenuItem = new MenuItem("Exit");
         exitMenuItem.setOnAction(actionEvent -> Platform.exit());
 
@@ -46,7 +56,7 @@ public class TopMenu extends MenuBar {
     }
 
     private void setUpHelp(){
-        menuHelp = new Menu("Help");
+
     }
 
 
