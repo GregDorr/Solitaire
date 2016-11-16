@@ -1,4 +1,4 @@
-package Solitare;
+package Solitaire;
 
 public class Controller{
 
