@@ -1,4 +1,4 @@
-package Solitare;
+package Solitaire;
 
 import javafx.scene.image.ImageView;
 
@@ -70,6 +70,21 @@ public class Card {
     public String toString(){
         return ("Card[Number: " + cardNum + ", Suit: " + suit + "]");
     }
+
+    /**
+     *
+     * @return
+     */
+    public boolean equals(Card c2){
+        if(this.cardNum == c2.getCardNum()){
+            if(this.suit == c2.getSuit())
+                return true;
+        }
+        return false;
+    }
+
+
+
 
     //SETTERS AND GETTERS
     public int getCardNum() {
