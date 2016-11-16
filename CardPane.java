@@ -1,9 +1,10 @@
-package Solitare;
+package Solitaire;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
+
 import java.util.ArrayList;
 
 /**
@@ -19,13 +20,16 @@ public class CardPane extends StackPane {
 
     //keep track of the number of cards
     private int numCards;
+    private final int stackNumber;
+
     /**
      * Default Constructor that accepts no parameters.
      */
-    public CardPane(){
+    public CardPane(int stackNumber){
         super();
         super.setAlignment(Pos.TOP_CENTER);
         numCards = 0;
+        this.stackNumber = stackNumber;
     }
 
     /**
@@ -36,7 +40,31 @@ public class CardPane extends StackPane {
     public void add(Node newNode){
         super.getChildren().add(newNode);
         numCards++;
-        StackPane.setMargin(newNode,new Insets((10*numCards),0,0,0));
+        super.layoutChildren();
+    }
+
+    /**
+     *
+     * @param newNode
+     */
+    public void addHorizontal(Node newNode){
+        numCards++;
+        super.getChildren().add(newNode);
+        StackPane.setMargin(newNode,new Insets(0,(10*numCards + (5*numCards)),0,0));
+        super.layoutChildren();
+
+    }
+
+    /**
+     *
+     * @param newNode
+     */
+    public void addVertical(Node newNode){
+        //clearing any constraints that might be on it
+        StackPane.clearConstraints(newNode);
+        numCards++;
+        super.getChildren().add(newNode);
+        StackPane.setMargin(newNode,new Insets((10*numCards + (5*numCards)),0,0,0));
         super.layoutChildren();
     }
 
@@ -70,4 +98,46 @@ public class CardPane extends StackPane {
         }
         return temp;
     }
+
+    /**
+     *
+     * @return a boolean if it's empty
+     */
+    public boolean isEmpty(){
+        return super.getChildren().isEmpty();
+    }
+
+    /**
+     * @return StackNumber
+     */
+    public int getStackNumber(){
+        return stackNumber;
+    }
+
+    /**
+     * @return the number of cards in the stack
+     */
+    public int getNumCards(){return numCards;}
+
+    /**
+     *
+     */
+    public ArrayList<ImageCard> getCardsBelow(ImageCard c1){
+        ArrayList<ImageCard> temp = getMoveAbleCards();
+        int index = temp.indexOf(c1);
+
+        ArrayList<ImageCard>returnCards = new ArrayList<ImageCard>();
+
+        if(index == temp.size())
+            return null;
+        else{
+
+            for(int i = 0; i < index; i++){
+                returnCards.add(temp.get(i));
+            }
+            return returnCards;
+        }
+    }
+
+
 }
