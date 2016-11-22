@@ -1,0 +1,11 @@
+# Git Ignore #
+
+*.classpath
+*.project
+*.eml
+*.iml
+*.png
+*.xml
+*.jar
+*.MF
+*.html
