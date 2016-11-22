@@ -1,0 +1,20 @@
+#CardStacks{
+
+}
+
+#ROOT{
+    -fx-background-color: green;
+}
+
+#DrawStack{
+    -fx-padding: 20px;
+}
+
+#PickStack{
+    -fx-padding: 20px;
+
+}
+
+#FinalSpots{
+    -fx-padding: 20px;
+}

@@ -1,0 +1,11 @@
+//TODO##
+
+* Fix settings in top menu
+* implement 3 or 1 card draw mode
+    * Continue working on 3 cards in the pick pile
+    * spacing out the cards
+* Animation for when you win
+
+//Bug Fixes and changes
+* Number of clicks for final stack and flipping cards
+* ability to move cards from the final stacks
