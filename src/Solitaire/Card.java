@@ -19,10 +19,10 @@ public class Card {
 
     /**
      * Constructor that takes in 4 arguments
-     * @param num -- the number of the card
-     * @param suit -- the suit of the card
-     * @param color -- the color of the card
-     * @param cardFace -- the image of the face
+     * @param num the number of the card
+     * @param suit the suit of the card
+     * @param color the color of the card
+     * @param cardFace the image of the face
      */
     public Card(int num, String suit, String color, ImageView cardFace){
         cardNum = num;
@@ -60,8 +60,8 @@ public class Card {
     }
 
     /**
-     *
-     * @return
+     * @param c2 another card to compare against
+     * @return true if the cards are equal. false if they are not.
      */
     public boolean equals(Card c2){
         if(this.cardNum == c2.getCardNum()){
@@ -71,34 +71,56 @@ public class Card {
         return false;
     }
 
-    //SETTERS AND GETTERS
+    /**
+     *
+     * @return The number of the card
+     */
     public int getCardNum() {
         return cardNum;
     }
 
+    /**
+     *
+     * @return The suit of the card
+     */
     public String getSuit() {
         return suit;
     }
 
+    /**
+     *
+     * @return true if the card is face up. false if face down
+     */
     public boolean isFaceUp() {
         return faceUp;
     }
 
+    /**
+     * Sets the card face up or face down.
+     * @param faceUp true if the card is face up, false if it's face down
+     */
     public void setFaceUp(boolean faceUp) {
         this.faceUp = faceUp;
     }
 
+    /**
+     *
+     * @return The image of the cards face
+     */
     public ImageView getCardFace() {
         return cardFace;
     }
 
-    public void setCardFace(ImageView cardFace) {
-        this.cardFace = cardFace;
-    }
-
+    /**
+     *
+     * @return The image of the back of the card
+     */
     public ImageView getCardBack() {return cardBack;}
 
+    /**
+     * This method returns red if it's a diamond or hearts
+     * and returns black if it's a spades or clubs.
+     * @return The color of the card
+     */
     public String getColor(){ return color; }
-
-    public void setColor(String color){ this.color = color;}
 }
