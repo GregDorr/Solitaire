@@ -1,6 +1,8 @@
 package Solitaire;
 
+import javafx.event.EventDispatchChain;
 import javafx.geometry.Insets;
+import javafx.geometry.Point3D;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
@@ -9,6 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
+import javafx.stage.Stage;
 import java.util.ArrayList;
 
 /**
@@ -18,10 +21,12 @@ import java.util.ArrayList;
  */
 public class MainScene extends Scene {
 
-    CardPane fromPane;
-    ImageCard moveCard;
-    ArrayList<ImageCard> cardsBelow;
+    private CardPane fromPane;
+    private ImageCard moveCard;
+    private ArrayList<ImageCard> cardsBelow;
     boolean canStack = false;
+
+    private boolean autoComplete = false;
 
     //bottom most node
     private BorderPane root;
@@ -45,19 +50,24 @@ public class MainScene extends Scene {
     //number of cards
     private int numDraw;
 
+    //link back to main
+    private Main main;
+
     /**
      *
      * @param root
      */
-    public MainScene(BorderPane root, int numCards){
-        super(root, 675, 400);
-
+    public MainScene(BorderPane root, int numCards, Main main){
+        super(root, 675, 500);
         //setting the root pane
         this.root = root;
         root.setId("ROOT");
 
         //1 or 3 cards to draw
         numDraw = numCards;
+
+        //setting main
+        this.main = main;
 
         //setting the cursor
         this.setCursor(Cursor.HAND);
@@ -153,19 +163,28 @@ public class MainScene extends Scene {
             for(int index = 0; index < numDraw; index++){
                 drawSize = draw.getChildren().size();
                 cards[index] = (ImageCard)draw.getChildren().get(drawSize-1);
-
                 cards[index].setImage(cards[index].getCard().getCardFace());
-
-                if(index == numDraw-1) {
-                    cards[index].getCard().setFaceUp(true);
-                }
 
                 //removing the action listener and adding a new one
                 cards[index].setOnMouseClicked((MouseEvent e) -> setCardFlipAndStackListener(e));
                 //adding the drag and drop listener
                 cards[index].setOnDragDetected((MouseEvent e) -> dragDetected(e));
-                //adding it to the draw stack
-                pick.addHorizontal(cards[index]);
+
+                //adding it to the pick stack
+                if(numDraw == 1){
+                    pick.add(cards[index]);
+                    cards[index].getCard().setFaceUp(true);
+                }
+
+                else{
+                    pick.addHorizontal(cards[index]);
+                    if(index+1 == numDraw) {
+                        cards[index].getCard().setFaceUp(true);
+                    }
+                }
+
+
+                //removing it from draw
                 draw.getChildren().remove(cards[index]);
             }
         }
@@ -232,6 +251,7 @@ public class MainScene extends Scene {
      */
     private void setCardFlipAndStackListener(MouseEvent event){
 
+        //TODO remove println
         System.out.println("Number of clicks: " + event.getClickCount());
 
         if(event.getClickCount()%2 == 0) {
@@ -382,6 +402,10 @@ public class MainScene extends Scene {
             }
             event.consume();
         }
+
+        autoComplete();
+        checkWin();
+
         event.consume();
 
     }
@@ -421,14 +445,12 @@ public class MainScene extends Scene {
        // moveCard = null;
         cardsBelow = new ArrayList<ImageCard>();
 
-        boolean flag = false;
 
         //if the card is coming rom the pick pile and if it's moveable
         if(((ImageCard)event.getSource()).getStackNumber() == 8) {
             if(((ImageCard)event.getSource()).getCard().isFaceUp()) {
                 moveCard = (ImageCard) event.getSource();
                 fromPane = pick;
-                flag = true;
             }
         }
 
@@ -436,7 +458,6 @@ public class MainScene extends Scene {
         else if(((ImageCard)event.getSource()).getStackNumber() >= 9){
             moveCard = (ImageCard)event.getSource();
             fromPane = finalSpot[(((ImageCard)event.getSource()).getStackNumber())-9];
-            flag = true;
         }
 
         //else it's coming from a stack
@@ -455,20 +476,17 @@ public class MainScene extends Scene {
                     fromPane = stacks[((ImageCard)event.getSource()).getStackNumber()];
                     moveCard = tempCard;
                     cardsBelow = fromPane.getCardsBelow(moveCard);
-                    flag = true;
                 }
             }
         }
 
-        if(flag) {
-            Dragboard db = startDragAndDrop(TransferMode.MOVE);
-            startDragAndDrop(TransferMode.MOVE);
-            db.setDragView(createImage());
-            //TODO DELETE
-            ClipboardContent content = new ClipboardContent();
-            content.putString(((ImageCard) event.getSource()).getCard().toString());
-            db.setContent(content);
-        }
+        Dragboard db = startDragAndDrop(TransferMode.MOVE);
+        startDragAndDrop(TransferMode.MOVE);
+        db.setDragView(createImage());
+        //TODO DELETE
+        ClipboardContent content = new ClipboardContent();
+        content.putString(((ImageCard) event.getSource()).getCard().toString());
+        db.setContent(content);
         event.consume();
     }
 
@@ -557,8 +575,6 @@ public class MainScene extends Scene {
             }
             else event.consume();
         }
-
-
         event.consume();
     }
 
@@ -569,8 +585,6 @@ public class MainScene extends Scene {
     private void dragDropped(final DragEvent event){
 
         CardPane toPane = (CardPane) event.getSource();
-
-        System.out.println(toPane.getStackNumber());
 
         //if it's being moved to a final pane
         if(toPane.getStackNumber() >= 9){
@@ -598,15 +612,22 @@ public class MainScene extends Scene {
                         cardsBelow.get(index).setStackNumber(toPane.getStackNumber());
                     }
                 }
-
+                //TODO checkout chunk in refrence to bug on 3 cards mode
+                /*
                 //if the pick pile as more cards it in
                 if((fromPane.getStackNumber() == 8) && (toPane.getNumCards() != 0)){
                     ImageCard c1 = (ImageCard)fromPane.getChildren().get(fromPane.getChildren().size()-1);
                     c1.getCard().setFaceUp(true);
                 }
+                */
+
             }
         }
         event.setDropCompleted(true);
+
+        //checking to see if the user won
+        autoComplete();
+        checkWin();
         event.consume();
     }
 
@@ -664,11 +685,122 @@ public class MainScene extends Scene {
         backGrid.addRow(1, cardGrids);
         backGrid.setAlignment(Pos.CENTER);
         backGrid.getColumnConstraints().add(col);
-
         //TODO remove test grid lines
         backGrid.setGridLinesVisible(true);
         cardGrids.setGridLinesVisible(true);
         topGrid.setGridLinesVisible(true);
+    }
+
+    private boolean checkWin(){
+        boolean finalSpot0 = false;
+        boolean finalSpot1 = false;
+        boolean finalSpot2 = false;
+        boolean finalSpot3 = false;
+
+        System.out.println(finalSpot[0].getChildren().size() + " "+finalSpot[1].getChildren().size() + " "+finalSpot[2].getChildren().size()+" "+finalSpot[3].getChildren().size());
+
+        if(finalSpot[0].getChildren().size() == 14)
+            finalSpot0 = true;
+        if(finalSpot[1].getChildren().size() == 14)
+            finalSpot1 = true;
+        if(finalSpot[2].getChildren().size() == 14)
+            finalSpot2 = true;
+        if(finalSpot[3].getChildren().size() == 14)
+            finalSpot3 = true;
+
+        if(finalSpot0 && finalSpot1 && finalSpot2 && finalSpot3){
+            BorderPane p1 = new BorderPane();
+            p1.setTop(new TopMenu(main));
+            main.setStage(new FinalAnimation(p1));
+            return true;
+        }
+        else return false;
+    }
+
+    public void autoComplete(){
+        //if theres zero or one card in the pick pile
+
+        int numberCards = pick.getChildren().size();
+
+        if(!autoComplete) {
+            //if theres one less than 2 cards in the pick stack (Excluding the bottom image)
+            if (numberCards < 3) {
+                //loop through the stacks to see if theres any facedown cards
+                for (int index = 0; index < 7; index++) {
+                    //if theres at lease one card face down it wont opperate
+                    if (!stacks[index].areCardsFaceDown())
+                        return;
+                }
+                showDialogueBox();
+                autoComplete=true;
+            }
+        }
+    }
+
+
+    public void showDialogueBox(){
+        Stage stage2 = new Stage();
+        DialogueBox d1 = new DialogueBox(new BorderPane(), stage2, this);
+        stage2.setScene(d1);
+        stage2.showAndWait();
+
+    }
+
+
+    public void finish(int limit,boolean skipFlip) {
+        //flipping over all the cards
+
+
+
+        if (!skipFlip) {
+            for (int index = 0; index < 7; index++) {
+                for (int i = 0; i < stacks[index].getChildren().size(); i++) {
+                    ImageCard c1 = ((ImageCard) stacks[index].getChildren().get(i));
+                    c1.getCard().setFaceUp(true);
+                    c1.setImage(c1.getCard().getCardFace());
+                }
+            }
+            int cardLookingFor = 1;
+            while (cardLookingFor < limit) {
+                int drawCards = draw.getChildren().size();
+                System.out.println(drawCards);
+                for (int index = 0; index < drawCards; index++) {
+                    //flipping over the card from draw
+                    ImageView c1 = (ImageView) draw.getChildren().get(0);
+                    drawCard(new MouseEvent(MouseEvent.MOUSE_CLICKED, c1.getX(), c1.getY(), c1.getLayoutX(),
+                                            c1.getLayoutY(), MouseButton.PRIMARY, 1, false, false, false,
+                                            false, true, false, false, false, false, false,
+                                            new PickResult(c1, new Point3D(c1.getX(), c1.getY(), 0), 0)));
+                    //checking if the pick stack is empty or not
+                    if (!pick.getChildren().isEmpty()) {
+                        int pickSize = pick.getChildren().size() - 1;
+
+                        //checking if the card is the current needed card
+                        ImageCard c2 = (ImageCard) pick.getChildren().get(pickSize);
+                        if (c2.getCard().getCardNum() == cardLookingFor) {
+                            setCardFlipAndStackListener(new MouseEvent(c2, (EventDispatchChain tail) -> (null), MouseEvent.MOUSE_CLICKED, c2.getX(), c2.getY(), c2.getLayoutX(), c2.getLayoutY(), MouseButton.PRIMARY, 2, false, false, false, false, true, false, false, false, false, false, new PickResult(c2, new Point3D(c2.getX(), c2.getY(), 0), 0)));
+                        }
+                    }
+                }
+                for (int index = 0; index < 7; index++) {
+                    ArrayList<Integer> indices = new ArrayList<Integer>();
+                    for (int i = 0; i < stacks[index].getChildren().size(); i++) {
+                        ImageCard c3 = (ImageCard) stacks[index].getChildren().get(i);
+                        if (c3.getCard().getCardNum() == cardLookingFor)
+                            indices.add(i);
+                    }
+                    //if theres anything in the cards to remove stack
+                    if(!indices.isEmpty())
+                    {
+                        for(int count = 0; count <  indices.size(); count++){
+                            ImageCard c3 = (ImageCard)stacks[index].getChildren().get((indices.get(count))-count);
+                            setCardFlipAndStackListener(new MouseEvent(c3, (EventDispatchChain tail) -> (null), MouseEvent.MOUSE_CLICKED, c3.getX(), c3.getY(), c3.getLayoutX(), c3.getLayoutY(), MouseButton.PRIMARY, 2, false, false, false, false, true, false, false, false, false, false, new PickResult(c3, new Point3D(c3.getX(), c3.getY(), 0), 0)));
+                        }
+                    }
+                }
+                cardLookingFor++;
+            }
+        }
     }
 
 }
