@@ -8,4 +8,6 @@
 
 //Bug Fixes and changes
 * Number of clicks for final stack and flipping cards
-* ability to move cards from the final stacks
+X ability to move cards from the final stacks
+* Error sometimes thrown when card is taken from pick pile
+* Program freezing when trying to switch to win animation
