@@ -50,7 +50,7 @@ public class Deck {
      * @param suit of the card
      * @return the path to the cards image
      */
-    private ImageView findCard(int num, String suit) {
+    public ImageView findCard(int num, String suit) {
         String path = "Cards/" + suit + new Integer(num).toString() + ".png";
         System.out.println(path);
         return new ImageView(path);
