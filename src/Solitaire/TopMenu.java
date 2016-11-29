@@ -53,7 +53,7 @@ public class TopMenu extends MenuBar {
             p1.setId("ROOT");
             p1.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             p1.setTop(new TopMenu(main));
-            main.setStage(new MainScene(p1,3));
+            main.setStage(new MainScene(p1,1,main));
         });
 
         //settings
