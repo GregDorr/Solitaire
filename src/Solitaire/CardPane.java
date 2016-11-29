@@ -146,5 +146,48 @@ public class CardPane extends StackPane {
         }
     }
 
+    /**
+     * To ImageCard array
+     */
+    public ImageCard[] toArray(){
+        ImageCard[] ctemp = new ImageCard[numCards];
+
+        for(int index = 0; index < numCards;index++){
+            ctemp[index] =(ImageCard) super.getChildren().get(index);
+        }
+
+        return ctemp;
+    }
+
+    /**
+     * For auto complete
+     */
+    public boolean areCardsFaceDown(){
+        boolean flag = false;
+
+        //if theres no cards in the stack
+        if(isEmpty()){
+            flag = true;
+        }
+
+        //checking if any cards are facedown
+        else{
+            int count = 0;
+            for(int index = 0; index < numCards; index++){
+                if(((ImageCard)super.getChildren().get(index)).getCard().isFaceUp()){
+                    count++;
+                }
+            }
+
+            if(count == numCards){
+                flag = true;
+            }
+        }
+
+
+
+        return flag;
+    }
+
 
 }
