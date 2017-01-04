@@ -4,6 +4,10 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.RadialGradient;
+import javafx.scene.paint.Stop;
 import javafx.stage.Stage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,15 +44,20 @@ public class Main extends Application {
 
             //setting the stage
             //adding it to the main scene
-            scene = new MainScene(p1,1,this);
+            scene = new MainScene(p1,3,this);
             stage.setTitle("Solitaire");
             stage.setScene(scene);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             //setting the cursor
             stage.show();
 
+            Stop[] stops = {new Stop(1, Color.GREEN),new Stop(0,Color.BLACK)};
+            scene.setFill(new RadialGradient(0,0,337.5,250,200,false, CycleMethod.REFLECT,stops));
+
+
             //14 solves whole thing
-          // scene.finish(14,false);
+            //TODO
+           //scene.robotFinish(14,false);
 
         } catch (Exception ex){
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -65,6 +74,8 @@ public class Main extends Application {
     public void setScene(MainScene newScene){this.scene = newScene;}
 
     public void setStage(Scene scene){stage.setScene(scene);}
+
+    public int getDrawNum(){return drawNum;}
 
     /**
      * MAIN

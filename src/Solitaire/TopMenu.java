@@ -23,7 +23,6 @@ public class TopMenu extends MenuBar {
     private MenuItem newGame;
     private MenuItem singleCard;
     private MenuItem tripleCard;
-
     private Main main;
 
     /**
@@ -48,13 +47,7 @@ public class TopMenu extends MenuBar {
 
         //new game
         newGame = new MenuItem("New Game");
-        newGame.setOnAction((ActionEvent)-> {
-            BorderPane p1 = new BorderPane();
-            p1.setId("ROOT");
-            p1.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-            p1.setTop(new TopMenu(main));
-            main.setStage(new MainScene(p1,1,main));
-        });
+        newGame.setOnAction((ActionEvent event)->newGame(event));
 
         //settings
         settings = new Menu("Setting");
@@ -77,8 +70,16 @@ public class TopMenu extends MenuBar {
 
 
     private void changeNumCards(final ActionEvent event, int num){
+        main.setDrawNum(num);
+        newGame(event);
+    }
 
+    private void newGame(final ActionEvent event){
+        BorderPane p1 = new BorderPane();
+        p1.setId("ROOT");
+        p1.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+        p1.setTop(new TopMenu(main));
+        main.setStage(new MainScene(p1,main.getDrawNum(),main));
     }
 
 }
-

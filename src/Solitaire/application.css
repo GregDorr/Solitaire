@@ -12,9 +12,9 @@
 
 #PickStack{
     -fx-padding: 20px;
-
 }
 
 #FinalSpots{
     -fx-padding: 20px;
+    -fx-border-color: black;
 }

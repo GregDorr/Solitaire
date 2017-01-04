@@ -1,8 +1,7 @@
 package Solitaire;
 
-import javafx.event.EventDispatchChain;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
-import javafx.geometry.Point3D;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
@@ -10,8 +9,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
-import javafx.stage.Stage;
+import java.awt.*;
 import java.util.ArrayList;
 
 /**
@@ -58,7 +58,7 @@ public class MainScene extends Scene {
      * @param root
      */
     public MainScene(BorderPane root, int numCards, Main main){
-        super(root, 675, 500);
+        super(root, 700, 500);
         //setting the root pane
         this.root = root;
         root.setId("ROOT");
@@ -92,13 +92,15 @@ public class MainScene extends Scene {
         //initializing a deck
         deck = new Deck();
 
+        //initialize the field
         setUpStacks();
         setUpGrids();
         setUpDraw();
 
-
         //set the
         root.setCenter(backGrid);
+
+
     }
 
     /**
@@ -159,8 +161,23 @@ public class MainScene extends Scene {
             //getting the card
             ImageCard[] cards = new ImageCard[numDraw];
 
+            //puts all previous cards in single file
+            if((numDraw == 3) && (pick.getChildren().size() != 0)){
 
+                int picklength = pick.getChildren().size();
+
+                for(int i = 0; i <picklength; i++){
+                   StackPane.clearConstraints(pick.getChildren().get(0));
+                   ImageCard c1 = (ImageCard)pick.getChildren().get(0);
+                   pick.remove(c1);
+                   pick.add(c1);
+                   c1.getCard().setFaceUp(true);
+                }
+            }
+
+            //putting the card into the pick pile
             for(int index = 0; index < numDraw; index++){
+
                 drawSize = draw.getChildren().size();
                 cards[index] = (ImageCard)draw.getChildren().get(drawSize-1);
                 cards[index].setImage(cards[index].getCard().getCardFace());
@@ -183,10 +200,10 @@ public class MainScene extends Scene {
                     }
                 }
 
-
                 //removing it from draw
                 draw.getChildren().remove(cards[index]);
             }
+
         }
 
         event.consume();
@@ -369,7 +386,7 @@ public class MainScene extends Scene {
                         }
                     }
                     else {
-                        if(c1.getCard().getCardNum() == 1) {
+                        if (c1.getCard().getCardNum() == 1) {
 
                             StackPane.clearConstraints(c1);
                             c1.setStackNumber(finalSpot[3].getStackNumber());
@@ -379,7 +396,12 @@ public class MainScene extends Scene {
                     }
                     event.consume();
                     break;
-
+            }
+            //TODO
+            //if the pick pile as more cards it in
+            if((fromPane.getStackNumber() == 8) && (fromPane.getNumCards() != 0)){
+                ImageCard cardTemp = (ImageCard)fromPane.getChildren().get(fromPane.getChildren().size()-1);
+                cardTemp.getCard().setFaceUp(true);
             }
         }
 
@@ -613,13 +635,13 @@ public class MainScene extends Scene {
                     }
                 }
                 //TODO checkout chunk in refrence to bug on 3 cards mode
-                /*
+
                 //if the pick pile as more cards it in
-                if((fromPane.getStackNumber() == 8) && (toPane.getNumCards() != 0)){
+                if((fromPane.getStackNumber() == 8) && (fromPane.getNumCards() != 0)){
                     ImageCard c1 = (ImageCard)fromPane.getChildren().get(fromPane.getChildren().size()-1);
                     c1.getCard().setFaceUp(true);
                 }
-                */
+
 
             }
         }
@@ -650,6 +672,8 @@ public class MainScene extends Scene {
 
             finalSpot[index].setPrefSize(72.0,96.0);
             finalSpot[index].setId("FinalSpots");
+
+            //setting the final spots to be transparent
 
             //adding event listeners
             finalSpot[index].setOnDragOver((DragEvent event) -> dragOver(event));
@@ -689,6 +713,11 @@ public class MainScene extends Scene {
         backGrid.setGridLinesVisible(true);
         cardGrids.setGridLinesVisible(true);
         topGrid.setGridLinesVisible(true);
+
+        backGrid.setStyle(" -fx-background-image: url('../../resources/Cards/transparentBackground.png')");
+        cardGrids.setStyle(" -fx-background-image: url('../../resources/Cards/transparentBackground.png')");
+        topGrid.setStyle(" -fx-background-image: url('../../resources/Cards/transparentBackground.png')");
+
     }
 
     private boolean checkWin(){
@@ -739,19 +768,15 @@ public class MainScene extends Scene {
 
 
     public void showDialogueBox(){
-        Stage stage2 = new Stage();
-        DialogueBox d1 = new DialogueBox(new BorderPane(), stage2, this);
-        stage2.setScene(d1);
-        stage2.showAndWait();
-
+        //Stage stage2 = new Stage();
+        //DialogueBox d1 = new DialogueBox(new BorderPane(), stage2, this);
+        //stage2.setScene(d1);
+        //stage2.show();
     }
 
-
+    /*
     public void finish(int limit,boolean skipFlip) {
         //flipping over all the cards
-
-
-
         if (!skipFlip) {
             for (int index = 0; index < 7; index++) {
                 for (int i = 0; i < stacks[index].getChildren().size(); i++) {
@@ -802,5 +827,151 @@ public class MainScene extends Scene {
             }
         }
     }
+    */
+
+
+    public void robotFinish(int limit, boolean skipFlip){
+        Robot robot = null;
+        try {
+            robot = new Robot();
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
+
+        //robot.setAutoDelay(10);
+
+    /*
+        ImageCard c1 = (ImageCard)stacks[1].getChildren().get(stacks[1].getChildren().size()-1);
+
+        Bounds innerBounds = stacks[1].localToScene(c1.getBoundsInLocal());
+
+        Bounds outterBounds = backGrid.localToScene(innerBounds);
+
+        Bounds lowest = root.localToScene(outterBounds);
+
+        System.out.println("Lowest: " + lowest);
+        System.out.println("Middle: " + outterBounds);
+        System.out.println("Highest: " + innerBounds);
+
+        int x = ((int)lowest.getMinX() + (int)lowest.getMaxX())/2;
+        int y = ((int)lowest.getMinY() + (int)lowest.getMaxY())/2;
+
+
+        System.out.println("Lowest Color: " + robot.getPixelColor(x,y));
+
+        x = ((int)outterBounds.getMinX() + (int)outterBounds.getMaxX())/2;
+        y = ((int)outterBounds.getMinY() + (int)outterBounds.getMaxY())/2;
+
+        System.out.println("Middle Color: " + robot.getPixelColor(x,y));
+
+        x = ((int)innerBounds.getMinX() + (int)innerBounds.getMaxX())/2;
+        y = ((int)innerBounds.getMinY() + (int)innerBounds.getMaxY())/2;
+
+        System.out.println("Highest Color: " + robot.getPixelColor(x,y));
+        */
+
+        //flipping over all the cards
+        if (!skipFlip) {
+            for (int index = 0; index < 7; index++) {
+                for (int i = 0; i < stacks[index].getChildren().size(); i++) {
+                    ImageCard c1 = ((ImageCard) stacks[index].getChildren().get(i));
+                    c1.getCard().setFaceUp(true);
+                    c1.setImage(c1.getCard().getCardFace());
+                }
+            }
+            int cardLookingFor = 1;
+            while (cardLookingFor < limit) {
+                int drawCards = draw.getChildren().size();
+                System.out.println(drawCards);
+                for (int index = 0; index < drawCards; index++) {
+                    //flipping over the card from draw
+                    ImageView c1 = (ImageView) draw.getChildren().get(0);
+                    Bounds innerBounds = draw.localToScreen(c1.getBoundsInLocal());
+
+                    int x = ((int)innerBounds.getMinX() + (int)innerBounds.getMaxX())/2;
+                    int y = ((int)innerBounds.getMinY() + (int)innerBounds.getMaxY())/2;
+
+                    robot.mouseMove(x,y);
+
+                    robot.mousePress(java.awt.event.MouseEvent.BUTTON1_MASK);
+                    robot.mouseRelease(java.awt.event.MouseEvent.BUTTON1_MASK);
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+
+                    //checking if the pick stack is empty or not
+                    if (!pick.getChildren().isEmpty()) {
+                        int pickSize = pick.getChildren().size() - 1;
+
+                        //checking if the card is the current needed card
+                        ImageCard c2 = (ImageCard) pick.getChildren().get(pickSize);
+                        if (c2.getCard().getCardNum() == cardLookingFor) {
+
+
+                            Bounds bounds = pick.localToScreen(c2.getBoundsInLocal());
+
+                            x = ((int)bounds.getMinX() + (int)bounds.getMaxX())/2;
+                            y = ((int)bounds.getMinY() + (int)bounds.getMaxY())/2;
+
+                            robot.mouseMove(x,y);
+                            robot.mousePress(java.awt.event.MouseEvent.BUTTON1_DOWN_MASK);
+                            robot.mouseRelease(java.awt.event.MouseEvent.BUTTON1_MASK);
+
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+
+                            robot.mousePress(java.awt.event.MouseEvent.BUTTON1_DOWN_MASK);
+                            robot.mouseRelease(java.awt.event.MouseEvent.BUTTON1_MASK);
+
+
+                        }
+                    }
+                }
+                for (int index = 0; index < 7; index++) {
+                    ArrayList<Integer> indices = new ArrayList<Integer>();
+                    for (int i = 0; i < stacks[index].getChildren().size(); i++) {
+                        ImageCard c3 = (ImageCard) stacks[index].getChildren().get(i);
+                        if (c3.getCard().getCardNum() == cardLookingFor)
+                            indices.add(i);
+                    }
+                    //if theres anything in the cards to remove stack
+                    if(!indices.isEmpty())
+                    {
+                        for(int count = 0; count <  indices.size(); count++){
+                            ImageCard c3 = (ImageCard)stacks[index].getChildren().get((indices.get(count))-count);
+
+                            Bounds bounds = stacks[count].localToScreen(c3.getBoundsInLocal());
+
+                            int x = ((int)bounds.getMinX() + (int)bounds.getMaxX())/2;
+                            int y = ((int)bounds.getMinY() + (int)bounds.getMaxY())/2;
+
+
+                            robot.mouseMove(x,y);
+                            robot.mousePress(java.awt.event.MouseEvent.BUTTON1_DOWN_MASK);
+                            robot.mouseRelease(java.awt.event.MouseEvent.BUTTON1_MASK);
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            robot.mousePress(java.awt.event.MouseEvent.BUTTON1_DOWN_MASK);
+                            robot.mouseRelease(java.awt.event.MouseEvent.BUTTON1_MASK);
+
+                        }
+                    }
+                }
+                cardLookingFor++;
+            }
+        }
+
+    }
+
+
 
 }

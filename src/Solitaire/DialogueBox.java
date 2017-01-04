@@ -85,7 +85,7 @@ public class DialogueBox extends Scene {
     }
 
     private void AutoCompleteListener(ActionEvent event){
-        main.finish(14,true);
+        //main.finish(14,true);
         stage.close();
     }
 }

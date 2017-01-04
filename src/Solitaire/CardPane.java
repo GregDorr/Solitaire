@@ -77,10 +77,10 @@ public class CardPane extends StackPane {
 
     /**
      * This Method removes a node from the list.
-     * @param newNode to be removed from the list
+     * @param node to be removed from the list
      */
-    public void remove(Node newNode){
-        super.getChildren().remove(newNode);
+    public void remove(Node node){
+        super.getChildren().remove(node);
         numCards--;
         super.layoutChildren();
     }

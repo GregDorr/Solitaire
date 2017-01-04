@@ -68,7 +68,6 @@ public class FinalAnimation extends Scene {
         setUpGrids();
         setUpFinal();
 
-
         //set the
         root.setCenter(backGrid);
     }
@@ -86,16 +85,10 @@ public class FinalAnimation extends Scene {
 
         for (int index = 0; index < finalSpot.length; index++) {
             finalSpot[index] = new CardPane((index+9));
-
             finalSpot[index].setPrefSize(72.0,96.0);
             finalSpot[index].setId("FinalSpots");
-
-
-
             topGrid.addColumn(index + 2, finalSpot[index]);
         }
-
-
 
         //for spacing out the rows
         ColumnConstraints[] columns = new ColumnConstraints[7];
@@ -136,10 +129,7 @@ public class FinalAnimation extends Scene {
             finalSpot[1].add(c2);
             finalSpot[2].add(c3);
             finalSpot[3].add(c4);
-
         }
-
-
     }
 
     private void applyAnimation(Node card){
@@ -161,5 +151,4 @@ public class FinalAnimation extends Scene {
         }
         pathTransition.play();
     }
-
 }
